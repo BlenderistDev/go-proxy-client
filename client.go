@@ -5,30 +5,33 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	pb "proxy/client/proxy"
-	"time"
 )
+
+const (
+	serviceAddress = "localhost:9999"
+)
+
 func main()  {
-	conn, err := grpc.Dial("localhost:9999", grpc.WithInsecure())
+	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(conn)
+
 	c := pb.NewProxyClient(conn)
-
-
 	url := pb.Url{Value: "https://google.com"}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-
-	defer cancel()
-
-	r, err := c.Get(ctx, &url)
-
+	r, err := c.Get(context.Background(), &url)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(r)
+	fmt.Printf("Result: \n%s", r.Value)
 }
 
 
