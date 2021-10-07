@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
-	pb "proxy/client/proxy/proxy/proxy"
+	pb "proxy/client/proxy"
 	"time"
 )
 func main()  {
