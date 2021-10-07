@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
+	"os"
 	pb "proxy/client/proxy"
 )
 
@@ -12,6 +13,12 @@ const (
 )
 
 func main()  {
+	if len(os.Args) < 2 {
+		fmt.Println("no url provided")
+		return
+	}
+	url := pb.Url{Value: os.Args[1]}
+
 	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err)
@@ -24,7 +31,6 @@ func main()  {
 	}(conn)
 
 	c := pb.NewProxyClient(conn)
-	url := pb.Url{Value: "https://google.com"}
 
 	r, err := c.Get(context.Background(), &url)
 	if err != nil {
